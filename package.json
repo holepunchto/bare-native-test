@@ -1,0 +1,71 @@
+{
+  "name": "bare-native-test",
+  "version": "0.0.0",
+  "description": "Run tests inside native apps built with Bare",
+  "exports": {
+    "./package": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "imports": {
+    "#runtime": {
+      "bare": "./lib/runtime/bare.js",
+      "node": "./lib/runtime/node.js"
+    },
+    "fs": {
+      "bare": "bare-fs",
+      "default": "fs"
+    },
+    "path": {
+      "bare": "bare-path",
+      "default": "path"
+    }
+  },
+  "bin": {
+    "bare-native-test": "bin.js"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "bin.js",
+    "lib"
+  ],
+  "scripts": {
+    "format": "prettier --write . && lunte --fix",
+    "lint": "prettier --check . && lunte",
+    "test": "brittle-bare --coverage test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holepunchto/bare-native-test.git"
+  },
+  "author": "Holepunch",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/holepunchto/bare-native-test/issues"
+  },
+  "homepage": "https://github.com/holepunchto/bare-native-test#readme",
+  "dependencies": {
+    "bare-build": "^1.3.0",
+    "bare-device": "^0.1.0",
+    "bare-fs": "^4.8.2",
+    "bare-path": "^3.1.2",
+    "paparam": "^1.13.0"
+  },
+  "peerDependencies": {
+    "bare-native": "^0.3.2"
+  },
+  "peerDependenciesMeta": {
+    "bare-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "brittle": "^4.3.0",
+    "lunte": "^1.8.0",
+    "prettier": "^3.4.1",
+    "prettier-config-holepunch": "^2.0.0"
+  }
+}

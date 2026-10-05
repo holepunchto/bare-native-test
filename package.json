@@ -1,6 +1,6 @@
 {
   "name": "bare-native-test",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Run tests inside native apps built with Bare",
   "exports": {
     "./package": "./package.json",

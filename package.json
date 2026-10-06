@@ -63,6 +63,9 @@
     }
   },
   "devDependencies": {
+    "bare-native": "^0.3.2",
+    "bare-os": "^3.9.3",
+    "bare-subprocess": "^6.2.0",
     "brittle": "^4.3.0",
     "lunte": "^1.8.0",
     "prettier": "^3.4.1",

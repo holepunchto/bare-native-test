@@ -58,10 +58,17 @@ jobs:
         if: ${{ matrix.platform == 'win32' }}
       - run: |
           nohup bash -c '
-            sleep 150
+            sleep 60
             ps -axo pid,ppid,etime,command | awk "NR == 1 || \$4 ~ /(bare|Tests|\/open|^open|\/cat|^cat|simctl|adb|codesign|xcrun|npm)\$/"
-            lsappinfo list
-            log show --last 3m --style compact --predicate "process == \"Tests\" OR subsystem == \"com.apple.launchservices\"" | tail -200
+            for pid in $(pgrep -f "Tests.app/Contents/MacOS/Tests") $(pgrep -x cat); do
+              echo "== lsof $pid"
+              lsof -p $pid | awk "NR == 1 || \$4 ~ /^[012][rwu]/"
+            done
+            for pid in $(pgrep -f "Tests.app/Contents/MacOS/Tests"); do
+              echo "== sample $pid"
+              sample $pid 2 -mayDie 2>&1 | sed -n "/Call graph:/,/Total number in stack/p" | head -150
+            done
+            log show --last 2m --style compact --predicate "process == \"Tests\"" | tail -60
             screencapture -x "$RUNNER_TEMP/screen.png"
           ' > "$RUNNER_TEMP/diagnostics.txt" 2>&1 &
         if: ${{ matrix.platform == 'darwin' }}

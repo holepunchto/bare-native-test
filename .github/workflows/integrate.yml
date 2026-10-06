@@ -52,5 +52,8 @@ jobs:
 
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         shell: pwsh
+        env:
+          VERSION: '1.8'
+          ARCH: ${{ runner.arch }}
         if: ${{ matrix.platform == 'win32' }}
       - run: npm test

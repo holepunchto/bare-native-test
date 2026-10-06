@@ -56,16 +56,21 @@ jobs:
           VERSION: '1.8'
           ARCH: ${{ runner.arch }}
         if: ${{ matrix.platform == 'win32' }}
-      - run: npm test
       - run: |
-          $cdb = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\Debuggers' -Recurse -Filter cdb.exe -ErrorAction SilentlyContinue | Where-Object { $_.DirectoryName -like '*\x64' } | Select-Object -First 1
-
-          if ($null -eq $cdb) {
-            Write-Output 'No debugger was found'
-            exit 0
-          }
-
-          & $cdb.FullName -y 'srv*C:\symbols*https://msdl.microsoft.com/download/symbols' -c 'g; .exr -1; !analyze -v; q' build\test\pass\Tests\App\Tests.exe
-        shell: powershell
-        timeout-minutes: 10
-        if: ${{ failure() && matrix.platform == 'win32' }}
+          nohup bash -c '
+            sleep 150
+            ps -axo pid,ppid,etime,command | awk "NR == 1 || \$4 ~ /(bare|Tests|\/open|^open|\/cat|^cat|simctl|adb|codesign|xcrun|npm)\$/"
+            lsappinfo list
+            log show --last 3m --style compact --predicate "process == \"Tests\" OR subsystem == \"com.apple.launchservices\"" | tail -200
+            screencapture -x "$RUNNER_TEMP/screen.png"
+          ' > "$RUNNER_TEMP/diagnostics.txt" 2>&1 &
+        if: ${{ matrix.platform == 'darwin' }}
+      - run: npm test
+        timeout-minutes: 4
+      - run: cat "$RUNNER_TEMP/diagnostics.txt"
+        if: ${{ failure() && matrix.platform == 'darwin' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screen
+          path: ${{ runner.temp }}/screen.png
+        if: ${{ failure() && matrix.platform == 'darwin' }}

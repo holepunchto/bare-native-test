@@ -57,3 +57,11 @@ jobs:
           ARCH: ${{ runner.arch }}
         if: ${{ matrix.platform == 'win32' }}
       - run: npm test
+      - run: |
+          Get-AppxPackage -Name *WindowsAppRuntime* | Format-Table Name, Version, Architecture -AutoSize
+
+          Get-WinEvent -FilterHashtable @{ LogName = 'Application'; Id = 1000, 1001 } -MaxEvents 10 -ErrorAction SilentlyContinue | Format-List TimeCreated, ProviderName, Message
+
+          Get-ChildItem C:\ProgramData\Microsoft\Windows\WER -Recurse -Filter Report.wer -ErrorAction SilentlyContinue | Where-Object { $_.DirectoryName -like '*Tests.exe*' } | ForEach-Object { Write-Output "== $($_.FullName)"; Get-Content $_.FullName -Encoding Unicode }
+        shell: pwsh
+        if: ${{ failure() && matrix.platform == 'win32' }}

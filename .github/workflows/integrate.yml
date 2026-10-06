@@ -56,12 +56,40 @@ jobs:
           VERSION: '1.8'
           ARCH: ${{ runner.arch }}
         if: ${{ matrix.platform == 'win32' }}
+      - run: |
+          $wer = 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting'
+          $dumps = "$wer\LocalDumps\Tests.exe"
+
+          New-Item -Path $dumps -Force | Out-Null
+
+          Set-ItemProperty -Path $wer -Name Disabled -Value 0 -Type DWord
+          Set-ItemProperty -Path $dumps -Name DumpFolder -Value (Join-Path $env:RUNNER_TEMP dumps) -Type ExpandString
+          Set-ItemProperty -Path $dumps -Name DumpType -Value 2 -Type DWord
+          Set-ItemProperty -Path $dumps -Name DumpCount -Value 4 -Type DWord
+
+          Start-Service WerSvc -ErrorAction SilentlyContinue
+        shell: powershell
+        if: ${{ matrix.platform == 'win32' }}
       - run: npm test
       - run: |
-          Get-AppxPackage -Name *WindowsAppRuntime* | Format-Table Name, Version, Architecture -AutoSize
+          Get-AppxPackage | Where-Object { $_.Name -like '*WindowsAppRuntime*' -or $_.Name -like '*WinAppRuntime*' } | Format-Table Name, Version, Architecture -AutoSize
 
-          Get-WinEvent -FilterHashtable @{ LogName = 'Application'; Id = 1000, 1001 } -MaxEvents 10 -ErrorAction SilentlyContinue | Format-List TimeCreated, ProviderName, Message
+          Get-WinEvent -FilterHashtable @{ LogName = 'Application'; ProviderName = 'Application Error', 'Windows Error Reporting' } -MaxEvents 10 -ErrorAction SilentlyContinue | Format-List TimeCreated, ProviderName, Message
 
-          Get-ChildItem C:\ProgramData\Microsoft\Windows\WER -Recurse -Filter Report.wer -ErrorAction SilentlyContinue | Where-Object { $_.DirectoryName -like '*Tests.exe*' } | ForEach-Object { Write-Output "== $($_.FullName)"; Get-Content $_.FullName -Encoding Unicode }
+          $dump = Get-ChildItem (Join-Path $env:RUNNER_TEMP dumps) -Filter *.dmp -ErrorAction SilentlyContinue | Select-Object -First 1
+
+          if ($null -eq $dump) {
+            Write-Output 'No crash dump was written'
+            exit 0
+          }
+
+          $cdb = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\Debuggers' -Recurse -Filter cdb.exe -ErrorAction SilentlyContinue | Where-Object { $_.DirectoryName -like '*\x64' } | Select-Object -First 1
+
+          if ($null -eq $cdb) {
+            Write-Output 'No debugger was found'
+            exit 0
+          }
+
+          & $cdb.FullName -z $dump.FullName -y 'srv*C:\symbols*https://msdl.microsoft.com/download/symbols' -c '!analyze -v; q'
         shell: powershell
         if: ${{ failure() && matrix.platform == 'win32' }}

@@ -6,20 +6,20 @@ const { spawn } = require('bare-subprocess')
 const timeout = 5 * 60 * 1000
 
 test('passing tests', { timeout }, async (t) => {
-  const { status, stdout } = await cli('pass')
+  const { status, stdout } = await cli(t, 'pass')
 
   t.is(status, 0)
   t.ok(stdout.includes('ok 1 - passes'))
 })
 
 test('failing tests', { timeout }, async (t) => {
-  const { status, stdout } = await cli('fail')
+  const { status, stdout } = await cli(t, 'fail')
 
   t.is(status, 1)
   t.ok(stdout.includes('not ok 1 - fails'))
 })
 
-function cli(fixture) {
+function cli(t, fixture) {
   const subprocess = spawn(
     os.execPath(),
     [
@@ -38,6 +38,12 @@ function cli(fixture) {
   })
 
   return new Promise((resolve) => {
-    subprocess.on('exit', (status) => resolve({ status, stdout }))
+    subprocess.on('exit', (status) => {
+      for (const line of stdout.split('\n')) {
+        if (line !== '') t.comment(line)
+      }
+
+      resolve({ status, stdout })
+    })
   })
 }

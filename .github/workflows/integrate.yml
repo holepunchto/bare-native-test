@@ -51,5 +51,6 @@ jobs:
           & $installer --quiet
 
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        shell: pwsh
         if: ${{ matrix.platform == 'win32' }}
       - run: npm test

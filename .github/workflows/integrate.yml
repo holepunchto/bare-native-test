@@ -51,7 +51,7 @@ jobs:
           & $installer --quiet
 
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        shell: pwsh
+        shell: powershell
         env:
           VERSION: '1.8'
           ARCH: ${{ runner.arch }}
@@ -63,5 +63,5 @@ jobs:
           Get-WinEvent -FilterHashtable @{ LogName = 'Application'; Id = 1000, 1001 } -MaxEvents 10 -ErrorAction SilentlyContinue | Format-List TimeCreated, ProviderName, Message
 
           Get-ChildItem C:\ProgramData\Microsoft\Windows\WER -Recurse -Filter Report.wer -ErrorAction SilentlyContinue | Where-Object { $_.DirectoryName -like '*Tests.exe*' } | ForEach-Object { Write-Output "== $($_.FullName)"; Get-Content $_.FullName -Encoding Unicode }
-        shell: pwsh
+        shell: powershell
         if: ${{ failure() && matrix.platform == 'win32' }}

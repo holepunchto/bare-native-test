@@ -136,6 +136,8 @@ async function report(app, platform, timeout) {
   if (!result.done) {
     console.log('Bail out! The app stopped before the end of its plan')
 
+    comment(status(await app.exited))
+
     result.bailed = true
   }
 
@@ -162,6 +164,18 @@ function lines(stream, online) {
         resolve()
       })
   })
+}
+
+// A platform that does not report how an app exits leaves both unset. Windows
+// reports a crash as an NTSTATUS code, which is looked up in hex.
+function status({ code, signal }) {
+  if (signal !== null) return `The app was killed by ${signal}`
+
+  if (code === null) return ''
+
+  if (code > 0xff) return `The app exited with code 0x${code.toString(16).toUpperCase()}`
+
+  return `The app exited with code ${code}`
 }
 
 function comment(output) {

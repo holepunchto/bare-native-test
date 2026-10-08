@@ -24,6 +24,11 @@ declare function run(
     /** The identifier of the app. Defaults to `to.holepunch.bare.native.test`. */
     identifier?: string
     /**
+     * A manifest template to build the Android app from, for tests that need permissions the
+     * default manifest does not declare. Android only, and ignored elsewhere.
+     */
+    androidManifest?: string | null
+    /**
      * Give up on a run that stops making progress for this many milliseconds. Each case has a
      * timeout of its own, so this is only a backstop. Defaults to 5 minutes.
      */

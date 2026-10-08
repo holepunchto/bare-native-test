@@ -46,6 +46,8 @@ const exitCode = await run('test.js', { runtime: 'bare-app-kit/runtime' })
 
 The entry point is built into an app with <https://github.com/holepunchto/bare-build> for a device found with <https://github.com/holepunchto/bare-device>, and the output of the app is streamed as TAP. The run is judged by that output alone: it passes when the plan is complete and no test failed, however the app exits.
 
+The app is installed with its runtime permissions already granted, so a test never waits on a permission dialog. On Android they still have to be declared, which the default manifest does not do.
+
 ## CLI
 
 #### `bare-native-test [flags] <entry>`
@@ -62,13 +64,14 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 --help|-h
 ```
 
-| Flag         | Default                           | Description                                               |
-| ------------ | --------------------------------- | --------------------------------------------------------- |
-| `--platform` | The current platform              | The platform to run on, such as `darwin` or `ios`         |
-| `--device`   | This machine, or a running device | The name of the device to run on                          |
-| `--runtime`  | `bare-native/runtime`             | The runtime to build the app with                         |
-| `--out`      | `build/test`                      | Where to write the entry point and the app                |
-| `--timeout`  | 5 minutes                         | Give up on a run that stops making progress for this long |
+| Flag                 | Default                           | Description                                               |
+| -------------------- | --------------------------------- | --------------------------------------------------------- |
+| `--platform`         | The current platform              | The platform to run on, such as `darwin` or `ios`         |
+| `--device`           | This machine, or a running device | The name of the device to run on                          |
+| `--runtime`          | `bare-native/runtime`             | The runtime to build the app with                         |
+| `--out`              | `build/test`                      | Where to write the entry point and the app                |
+| `--android-manifest` | The default manifest              | A manifest template to build the Android app from         |
+| `--timeout`          | 5 minutes                         | Give up on a run that stops making progress for this long |
 
 ## License
 

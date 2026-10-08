@@ -19,6 +19,7 @@ module.exports = async function run(entry, opts = {}) {
     runtime = 'bare-native/runtime',
     name = 'Tests',
     identifier = 'to.holepunch.bare.native.test',
+    androidManifest = null,
     timeout = 5 * 60 * 1000
   } = opts
 
@@ -36,13 +37,14 @@ module.exports = async function run(entry, opts = {}) {
     identifier,
     host: device.host,
     runtime,
+    androidManifest,
     cwd,
     out
   })
 
   if (app === null) return 1
 
-  await device.install(app)
+  await device.install(app, { grant: true })
 
   const result = await report(await device.launch(app, { args: platform.args }), platform, timeout)
 

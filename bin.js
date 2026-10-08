@@ -13,9 +13,10 @@ const cmd = command(
   flag('--device|-d <name>', 'The name of the device to run on'),
   flag('--runtime <specifier>', 'The runtime to use (default: bare-native/runtime)'),
   flag('--out|-o <dir>', 'The output directory (default: build/test)'),
+  flag('--android-manifest <path>', 'The Android manifest template'),
   flag('--timeout <ms>', 'Give up on a run that stops making progress for this long'),
   async ({ args, flags }) => {
-    const { version, platform, device, runtime, out, timeout } = flags
+    const { version, platform, device, runtime, out, androidManifest, timeout } = flags
 
     if (version) return console.log(`v${pkg.version}`)
 
@@ -24,6 +25,7 @@ const cmd = command(
       device,
       runtime,
       out,
+      androidManifest,
       timeout: timeout ? Number(timeout) : undefined
     })
   }

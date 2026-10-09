@@ -14,9 +14,10 @@ const cmd = command(
   flag('--runtime <specifier>', 'The runtime to use (default: bare-native/runtime)'),
   flag('--out|-o <dir>', 'The output directory (default: build/test)'),
   flag('--android-manifest <path>', 'The Android manifest template'),
+  flag('--defer <specifier>', 'A module specifier to defer resolution of').multiple(),
   flag('--timeout <ms>', 'Give up on a run that stops making progress for this long'),
   async ({ args, flags }) => {
-    const { version, platform, device, runtime, out, androidManifest, timeout } = flags
+    const { version, platform, device, runtime, out, androidManifest, defer, timeout } = flags
 
     if (version) return console.log(`v${pkg.version}`)
 
@@ -26,6 +27,7 @@ const cmd = command(
       runtime,
       out,
       androidManifest,
+      defer,
       timeout: timeout ? Number(timeout) : undefined
     })
   }

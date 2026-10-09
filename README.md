@@ -71,6 +71,7 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 | `--runtime`          | `bare-native/runtime`             | The runtime to build the app with                         |
 | `--out`              | `build/test`                      | Where to write the entry point and the app                |
 | `--android-manifest` | The default manifest              | A manifest template to build the Android app from         |
+| `--defer`            | Nothing                           | A module specifier to defer resolution of                 |
 | `--timeout`          | 5 minutes                         | Give up on a run that stops making progress for this long |
 
 ## License

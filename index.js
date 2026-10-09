@@ -20,6 +20,7 @@ module.exports = async function run(entry, opts = {}) {
     name = 'Tests',
     identifier = 'to.holepunch.bare.native.test',
     androidManifest = null,
+    defer = [],
     timeout = 5 * 60 * 1000
   } = opts
 
@@ -38,6 +39,7 @@ module.exports = async function run(entry, opts = {}) {
     host: device.host,
     runtime,
     androidManifest,
+    defer,
     cwd,
     out
   })

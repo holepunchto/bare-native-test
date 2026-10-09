@@ -29,6 +29,11 @@ declare function run(
      */
     androidManifest?: string | null
     /**
+     * Module specifiers to defer resolution of, for modules the tests pull in but that cannot be
+     * bundled, such as a coverage reporter that imports Node builtins.
+     */
+    defer?: string[]
+    /**
      * Give up on a run that stops making progress for this many milliseconds. Each case has a
      * timeout of its own, so this is only a backstop. Defaults to 5 minutes.
      */

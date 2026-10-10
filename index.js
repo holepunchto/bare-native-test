@@ -110,7 +110,11 @@ async function report(app, platform, timeout) {
     finish = resolve
   })
 
+  const ignored = (line) => platform.ignore.some((pattern) => pattern.test(line))
+
   const ended = lines(app.stdout, (line) => {
+    if (ignored(line)) return
+
     console.log(line)
 
     result.push(line)
@@ -119,7 +123,7 @@ async function report(app, platform, timeout) {
   })
 
   lines(app.stderr, (line) => {
-    if (!platform.ignore.some((pattern) => pattern.test(line))) comment(line)
+    if (!ignored(line)) comment(line)
   })
 
   Promise.all([app.exited, ended]).then(finish)

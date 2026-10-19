@@ -34,6 +34,12 @@ declare function run(
      */
     defer?: string[]
     /**
+     * Further options for `bare-build`, applied last, for an app that has to be built in a way the
+     * flags do not cover, such as one signed with a provisioning profile for an iOS device, which
+     * also fixes its `identifier`.
+     */
+    config?: object
+    /**
      * Give up on a run that stops making progress for this many milliseconds. Each case has a
      * timeout of its own, so this is only a backstop. Defaults to 5 minutes.
      */

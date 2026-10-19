@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const path = require('path')
 const { command, arg, flag, summary } = require('paparam')
 const pkg = require('./package')
 const program = require('#runtime')
@@ -9,6 +10,7 @@ const cmd = command(
   summary(pkg.description),
   arg('<entry>', 'The entry point of the tests'),
   flag('--version|-v', 'Print the current version'),
+  flag('--config <path>', 'Read bare-build options from a module'),
   flag('--platform <name>', 'The platform to run on (default: the current platform)'),
   flag('--device|-d <name>', 'The name of the device to run on'),
   flag('--runtime <specifier>', 'The runtime to use (default: bare-native/runtime)'),
@@ -21,6 +23,14 @@ const cmd = command(
 
     if (version) return console.log(`v${pkg.version}`)
 
+    let { config } = flags
+
+    if (config) {
+      config = require(path.resolve(config))
+
+      if ('default' in config) config = config.default
+    }
+
     program.exitCode = await run(args.entry, {
       platform,
       device,
@@ -28,6 +38,7 @@ const cmd = command(
       out,
       androidManifest,
       defer,
+      config,
       timeout: timeout ? Number(timeout) : undefined
     })
   }

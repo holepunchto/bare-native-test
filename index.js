@@ -75,7 +75,7 @@ function relative(from, to) {
 }
 
 async function build(entry, opts) {
-  const { app, name, identifier, host, runtime, cwd, out } = opts
+  const { app, name, identifier, host, runtime, androidManifest, defer, cwd, out } = opts
 
   fs.rmSync(app, { recursive: true, force: true })
 
@@ -86,6 +86,8 @@ async function build(entry, opts) {
       identifier,
       hosts: [host],
       runtime,
+      androidManifest,
+      defer,
       out
     })) {
       //

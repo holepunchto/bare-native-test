@@ -48,6 +48,23 @@ The entry point is built into an app with <https://github.com/holepunchto/bare-b
 
 The app is installed with its runtime permissions already granted, so a test never waits on a permission dialog. On Android they still have to be declared, which the default manifest does not do.
 
+An iOS device only runs a signed app, so a run on one needs the signing options of `bare-build`, and an `identifier` the provisioning profile covers. They are read from a module:
+
+`test/build.js`
+
+```js
+module.exports = {
+  identifier: 'to.holepunch.bare.native.test',
+  sign: true,
+  provisioningProfile: 'test/Tests.mobileprovision',
+  infoPlist: 'test/Info.plist'
+}
+```
+
+```console
+bare-native-test --platform ios --device "iPhone" --config test/build.js test.js
+```
+
 ## CLI
 
 #### `bare-native-test [flags] <entry>`
@@ -56,6 +73,7 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 
 ```console
 --version|-v
+--config <path>
 --platform <name>
 --device|-d <name>
 --runtime <specifier>
@@ -66,6 +84,7 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 
 | Flag                 | Default                           | Description                                               |
 | -------------------- | --------------------------------- | --------------------------------------------------------- |
+| `--config`           | Nothing                           | A module exporting further `bare-build` options           |
 | `--platform`         | The current platform              | The platform to run on, such as `darwin` or `ios`         |
 | `--device`           | This machine, or a running device | The name of the device to run on                          |
 | `--runtime`          | `bare-native/runtime`             | The runtime to build the app with                         |

@@ -21,6 +21,7 @@ module.exports = async function run(entry, opts = {}) {
     identifier = 'to.holepunch.bare.native.test',
     androidManifest = null,
     defer = [],
+    config = {},
     timeout = 5 * 60 * 1000
   } = opts
 
@@ -40,6 +41,7 @@ module.exports = async function run(entry, opts = {}) {
     runtime,
     androidManifest,
     defer,
+    config,
     cwd,
     out
   })
@@ -75,7 +77,7 @@ function relative(from, to) {
 }
 
 async function build(entry, opts) {
-  const { app, name, identifier, host, runtime, androidManifest, defer, cwd, out } = opts
+  const { app, name, identifier, host, runtime, androidManifest, defer, config, cwd, out } = opts
 
   fs.rmSync(app, { recursive: true, force: true })
 
@@ -88,7 +90,8 @@ async function build(entry, opts) {
       runtime,
       androidManifest,
       defer,
-      out
+      out,
+      ...config
     })) {
       //
     }

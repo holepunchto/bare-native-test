@@ -65,6 +65,20 @@ module.exports = {
 bare-native-test --platform ios --device "iPhone" --config test/build.js test.js
 ```
 
+A run that needs something done on this machine around the app, such as driving the device while the tests watch it, gets `--before` and `--after`. The `before` hook runs once the app is installed, `after` once the run is over, even when it bailed, and receives whatever `before` resolved with.
+
+`test/before.js`
+
+```js
+module.exports = async function ({ device }) {
+  await device.shell('cmd', ['bluetooth_manager', 'disable'])
+}
+```
+
+```console
+bare-native-test --platform android --before test/before.js --after test/after.js test.js
+```
+
 ## CLI
 
 #### `bare-native-test [flags] <entry>`
@@ -74,6 +88,8 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 ```console
 --version|-v
 --config <path>
+--before <path>
+--after <path>
 --platform <name>
 --device|-d <name>
 --runtime <specifier>
@@ -82,16 +98,18 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 --help|-h
 ```
 
-| Flag                 | Default                           | Description                                               |
-| -------------------- | --------------------------------- | --------------------------------------------------------- |
-| `--config`           | Nothing                           | A module exporting further `bare-build` options           |
-| `--platform`         | The current platform              | The platform to run on, such as `darwin` or `ios`         |
-| `--device`           | This machine, or a running device | The name of the device to run on                          |
-| `--runtime`          | `bare-native/runtime`             | The runtime to build the app with                         |
-| `--out`              | `build/test`                      | Where to write the entry point and the app                |
-| `--android-manifest` | The default manifest              | A manifest template to build the Android app from         |
-| `--defer`            | Nothing                           | A module specifier to defer resolution of                 |
-| `--timeout`          | 5 minutes                         | Give up on a run that stops making progress for this long |
+| Flag                 | Default                           | Description                                                |
+| -------------------- | --------------------------------- | ---------------------------------------------------------- |
+| `--config`           | Nothing                           | A module exporting further `bare-build` options            |
+| `--before`           | Nothing                           | A module to run on this machine before the app is launched |
+| `--after`            | Nothing                           | A module to run on this machine after the run              |
+| `--platform`         | The current platform              | The platform to run on, such as `darwin` or `ios`          |
+| `--device`           | This machine, or a running device | The name of the device to run on                           |
+| `--runtime`          | `bare-native/runtime`             | The runtime to build the app with                          |
+| `--out`              | `build/test`                      | Where to write the entry point and the app                 |
+| `--android-manifest` | The default manifest              | A manifest template to build the Android app from          |
+| `--defer`            | Nothing                           | A module specifier to defer resolution of                  |
+| `--timeout`          | 5 minutes                         | Give up on a run that stops making progress for this long  |
 
 ## License
 

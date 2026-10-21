@@ -53,13 +53,19 @@ An iOS device only runs a signed app, so a run on one needs the signing options 
 `test/build.js`
 
 ```js
-module.exports = {
-  identifier: 'to.holepunch.bare.native.test',
-  sign: true,
-  provisioningProfile: 'test/Tests.mobileprovision',
-  infoPlist: 'test/Info.plist'
+module.exports = ({ device }) => {
+  if (device.platform !== 'ios') return {}
+
+  return {
+    identifier: 'to.holepunch.bare.native.test',
+    sign: true,
+    provisioningProfile: 'test/Tests.mobileprovision',
+    infoPlist: 'test/Info.plist'
+  }
 }
 ```
+
+The module exports either an object of options, or a function that returns one. The function is called with `{ device }`, the device the app is built for, so the options can differ per platform.
 
 ```console
 bare-native-test --platform ios --device "iPhone" --config test/build.js test.js

@@ -43,7 +43,7 @@ module.exports = async function run(entry, opts = {}) {
     runtime,
     androidManifest,
     defer,
-    config,
+    config: typeof config === 'function' ? await config({ device }) : config,
     cwd,
     out
   })

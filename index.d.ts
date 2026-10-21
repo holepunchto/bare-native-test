@@ -38,9 +38,10 @@ declare function run(
     /**
      * Further options for `bare-build`, applied last, for an app that has to be built in a way the
      * flags do not cover, such as one signed with a provisioning profile for an iOS device, which
-     * also fixes its `identifier`.
+     * also fixes its `identifier`. A function is called with the device the app is built for, so
+     * the options can depend on it.
      */
-    config?: object
+    config?: object | ((context: { device: Device }) => object | Promise<object>)
     /**
      * Run on this machine once the app is installed, before it is launched, with the device and
      * the app. What it resolves with is handed to `after`.

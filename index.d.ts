@@ -1,3 +1,5 @@
+import { Device } from 'bare-device'
+
 /**
  * Build the tests at `entry` into an app for a device, launch it there, and stream its TAP output.
  * Resolves with `0` if the TAP output reports a complete run with no failures, and `1` otherwise.
@@ -39,6 +41,16 @@ declare function run(
      * also fixes its `identifier`.
      */
     config?: object
+    /**
+     * Run on this machine once the app is installed, before it is launched, with the device and
+     * the app. What it resolves with is handed to `after`.
+     */
+    before?: (context: { device: Device; app: string }) => unknown
+    /**
+     * Run on this machine once the run is over, whether it completed or bailed, with the device,
+     * the app and what `before` resolved with.
+     */
+    after?: (context: { device: Device; app: string }, state: unknown) => unknown
     /**
      * Give up on a run that stops making progress for this many milliseconds. Each case has a
      * timeout of its own, so this is only a backstop. Defaults to 5 minutes.

@@ -22,6 +22,8 @@ module.exports = async function run(entry, opts = {}) {
     androidManifest = null,
     defer = [],
     config = {},
+    before = null,
+    after = null,
     timeout = 5 * 60 * 1000
   } = opts
 
@@ -50,7 +52,15 @@ module.exports = async function run(entry, opts = {}) {
 
   await device.install(app, { grant: true })
 
-  const result = await report(await device.launch(app, { args: platform.args }), platform, timeout)
+  const state = before ? await before({ device, app }) : undefined
+
+  let result
+
+  try {
+    result = await report(await device.launch(app, { args: platform.args }), platform, timeout)
+  } finally {
+    if (after) await after({ device, app }, state)
+  }
 
   return result.ok ? 0 : 1
 }

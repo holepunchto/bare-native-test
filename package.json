@@ -49,7 +49,7 @@
   "homepage": "https://github.com/holepunchto/bare-native-test#readme",
   "dependencies": {
     "bare-build": "^1.4.1",
-    "bare-device": "^0.1.8",
+    "bare-device": "^0.1.11",
     "bare-fs": "^4.8.2",
     "bare-path": "^3.1.2",
     "paparam": "^1.13.0"
@@ -63,6 +63,7 @@
     }
   },
   "devDependencies": {
+    "bare-env": "^3.0.1",
     "bare-native": "^0.3.2",
     "bare-os": "^3.9.3",
     "bare-subprocess": "^6.2.0",

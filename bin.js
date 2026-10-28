@@ -19,9 +19,10 @@ const cmd = command(
   flag('--out|-o <dir>', 'The output directory (default: build/test)'),
   flag('--android-manifest <path>', 'The Android manifest template'),
   flag('--defer <specifier>', 'A module specifier to defer resolution of').multiple(),
+  flag('--env <NAME=VALUE>', 'An environment variable to set for the app').multiple(),
   flag('--timeout <ms>', 'Give up on a run that stops making progress for this long'),
   async ({ args, flags }) => {
-    const { version, platform, device, runtime, out, androidManifest, defer, timeout } = flags
+    const { version, platform, device, runtime, out, androidManifest, defer, env, timeout } = flags
 
     if (version) return console.log(`v${pkg.version}`)
 
@@ -36,6 +37,7 @@ const cmd = command(
       out,
       androidManifest,
       defer,
+      env: variables(env),
       config,
       before,
       after,
@@ -43,6 +45,20 @@ const cmd = command(
     })
   }
 )
+
+function variables(entries = []) {
+  const result = {}
+
+  for (const entry of entries) {
+    const i = entry.indexOf('=')
+
+    if (i === -1) throw new Error(`Expected NAME=VALUE, got '${entry}'`)
+
+    result[entry.slice(0, i)] = entry.slice(i + 1)
+  }
+
+  return result
+}
 
 function load(specifier) {
   if (!specifier) return undefined

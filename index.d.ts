@@ -35,6 +35,8 @@ declare function run(
      * bundled, such as a coverage reporter that imports Node builtins.
      */
     defer?: string[]
+    /** Environment variables to set for the app. This machine only, and ignored elsewhere. */
+    env?: Record<string, string>
     /**
      * Further options for `bare-build`, applied last, for an app that has to be built in a way the
      * flags do not cover, such as one signed with a provisioning profile for an iOS device, which

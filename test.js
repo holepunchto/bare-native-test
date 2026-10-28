@@ -19,13 +19,21 @@ test('failing tests', { timeout }, async (t) => {
   t.ok(stdout.includes('not ok 1 - fails'))
 })
 
-function cli(t, fixture) {
+test('env', { timeout }, async (t) => {
+  const { status, stdout } = await cli(t, 'env', ['--env', 'BARE_NATIVE_TEST=env'])
+
+  t.is(status, 0)
+  t.ok(stdout.includes('ok 1 - sees env'))
+})
+
+function cli(t, fixture, flags = []) {
   const subprocess = spawn(
     os.execPath(),
     [
       path.join(__dirname, 'bin.js'),
       '--out',
       path.join('build', 'test', fixture),
+      ...flags,
       path.join('test', 'fixtures', fixture + '.js')
     ],
     { cwd: __dirname, stdio: ['ignore', 'pipe', 'inherit'] }

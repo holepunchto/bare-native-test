@@ -21,6 +21,7 @@ module.exports = async function run(entry, opts = {}) {
     identifier = 'to.holepunch.bare.native.test',
     androidManifest = null,
     defer = [],
+    env = {},
     config = {},
     before = null,
     after = null,
@@ -57,7 +58,7 @@ module.exports = async function run(entry, opts = {}) {
   let result
 
   try {
-    result = await report(await device.launch(app, { args: platform.args }), platform, timeout)
+    result = await report(await device.launch(app, { args: platform.args, env }), platform, timeout)
   } finally {
     if (after) await after({ device, app }, state)
   }

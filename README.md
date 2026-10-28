@@ -85,6 +85,12 @@ module.exports = async function ({ device }) {
 bare-native-test --platform android --before test/before.js --after test/after.js test.js
 ```
 
+`--env` sets an environment variable for the app, on this machine only:
+
+```console
+bare-native-test --env BARE_LOG=debug test.js
+```
+
 ## CLI
 
 #### `bare-native-test [flags] <entry>`
@@ -100,6 +106,7 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 --device|-d <name>
 --runtime <specifier>
 --out|-o <dir>
+--env <NAME=VALUE>
 --timeout <ms>
 --help|-h
 ```
@@ -115,6 +122,7 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 | `--out`              | `build/test`                      | Where to write the entry point and the app                 |
 | `--android-manifest` | The default manifest              | A manifest template to build the Android app from          |
 | `--defer`            | Nothing                           | A module specifier to defer resolution of                  |
+| `--env`              | Nothing                           | An environment variable to set for the app, repeatable     |
 | `--timeout`          | 5 minutes                         | Give up on a run that stops making progress for this long  |
 
 ## License

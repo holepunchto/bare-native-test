@@ -91,6 +91,17 @@ bare-native-test --platform android --before test/before.js --after test/after.j
 bare-native-test --env BARE_LOG=debug test.js
 ```
 
+`--env @<path>` reads them from a file instead, and `--env -` from stdin, one `NAME=VALUE` per line. Values are taken as they are, without quotes or escapes, and lines that are blank or start with `#` are skipped. Variables are applied in order, so a later `--env` takes precedence. This takes the environment that `bare-make test env` prints, such as the preloaded sanitizer runtime of a build with `--sanitize address`:
+
+```console
+bare-make test env | bare-native-test --env - test.js
+```
+
+```console
+bare-make test env > test.env
+bare-native-test --env @test.env test.js
+```
+
 ## CLI
 
 #### `bare-native-test [flags] <entry>`
@@ -111,19 +122,19 @@ Build the tests at `<entry>` into an app for a device, launch it there, and stre
 --help|-h
 ```
 
-| Flag                 | Default                           | Description                                                |
-| -------------------- | --------------------------------- | ---------------------------------------------------------- |
-| `--config`           | Nothing                           | A module exporting further `bare-build` options            |
-| `--before`           | Nothing                           | A module to run on this machine before the app is launched |
-| `--after`            | Nothing                           | A module to run on this machine after the run              |
-| `--platform`         | The current platform              | The platform to run on, such as `darwin` or `ios`          |
-| `--device`           | This machine, or a running device | The name of the device to run on                           |
-| `--runtime`          | `bare-native/runtime`             | The runtime to build the app with                          |
-| `--out`              | `build/test`                      | Where to write the entry point and the app                 |
-| `--android-manifest` | The default manifest              | A manifest template to build the Android app from          |
-| `--defer`            | Nothing                           | A module specifier to defer resolution of                  |
-| `--env`              | Nothing                           | An environment variable to set for the app, repeatable     |
-| `--timeout`          | 5 minutes                         | Give up on a run that stops making progress for this long  |
+| Flag                 | Default                           | Description                                                                  |
+| -------------------- | --------------------------------- | ---------------------------------------------------------------------------- |
+| `--config`           | Nothing                           | A module exporting further `bare-build` options                              |
+| `--before`           | Nothing                           | A module to run on this machine before the app is launched                   |
+| `--after`            | Nothing                           | A module to run on this machine after the run                                |
+| `--platform`         | The current platform              | The platform to run on, such as `darwin` or `ios`                            |
+| `--device`           | This machine, or a running device | The name of the device to run on                                             |
+| `--runtime`          | `bare-native/runtime`             | The runtime to build the app with                                            |
+| `--out`              | `build/test`                      | Where to write the entry point and the app                                   |
+| `--android-manifest` | The default manifest              | A manifest template to build the Android app from                            |
+| `--defer`            | Nothing                           | A module specifier to defer resolution of                                    |
+| `--env`              | Nothing                           | An environment variable to set for the app, or `@<path>` or `-` to read them |
+| `--timeout`          | 5 minutes                         | Give up on a run that stops making progress for this long                    |
 
 ## License
 

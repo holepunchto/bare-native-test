@@ -26,7 +26,41 @@ test('env', { timeout }, async (t) => {
   t.ok(stdout.includes('ok 1 - sees env'))
 })
 
-function cli(t, fixture, flags = []) {
+test('env from stdin', { timeout }, async (t) => {
+  const { status, stdout } = await cli(
+    t,
+    'env',
+    ['--env', '-'],
+    '# Comment\nBARE_NATIVE_TEST=env\n'
+  )
+
+  t.is(status, 0)
+  t.ok(stdout.includes('ok 1 - sees env'))
+})
+
+test('env from file', { timeout }, async (t) => {
+  const { status, stdout } = await cli(t, 'env', [
+    '--env',
+    '@' + path.join('test', 'fixtures', 'env.env')
+  ])
+
+  t.is(status, 0)
+  t.ok(stdout.includes('ok 1 - sees env'))
+})
+
+test('later env takes precedence over stdin', { timeout }, async (t) => {
+  const { status, stdout } = await cli(
+    t,
+    'env',
+    ['--env', '-', '--env', 'BARE_NATIVE_TEST=env'],
+    'BARE_NATIVE_TEST=stdin\n'
+  )
+
+  t.is(status, 0)
+  t.ok(stdout.includes('ok 1 - sees env'))
+})
+
+function cli(t, fixture, flags = [], input = null) {
   const subprocess = spawn(
     os.execPath(),
     [
@@ -36,8 +70,10 @@ function cli(t, fixture, flags = []) {
       ...flags,
       path.join('test', 'fixtures', fixture + '.js')
     ],
-    { cwd: __dirname, stdio: ['ignore', 'pipe', 'inherit'] }
+    { cwd: __dirname, stdio: [input === null ? 'ignore' : 'pipe', 'pipe', 'inherit'] }
   )
+
+  if (input !== null) subprocess.stdin.end(input)
 
   let stdout = ''
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const fs = require('fs')
 const path = require('path')
 const { command, arg, flag, summary } = require('paparam')
 const pkg = require('./package')
@@ -19,7 +20,10 @@ const cmd = command(
   flag('--out|-o <dir>', 'The output directory (default: build/test)'),
   flag('--android-manifest <path>', 'The Android manifest template'),
   flag('--defer <specifier>', 'A module specifier to defer resolution of').multiple(),
-  flag('--env <NAME=VALUE>', 'An environment variable to set for the app').multiple(),
+  flag(
+    '--env <NAME=VALUE>',
+    'An environment variable to set for the app, or @<path> or - to read them from a file or stdin'
+  ).multiple(),
   flag('--timeout <ms>', 'Give up on a run that stops making progress for this long'),
   async ({ args, flags }) => {
     const { version, platform, device, runtime, out, androidManifest, defer, env, timeout } = flags
@@ -50,14 +54,39 @@ function variables(entries = []) {
   const result = {}
 
   for (const entry of entries) {
-    const i = entry.indexOf('=')
+    for (const line of expand(entry)) {
+      const i = line.indexOf('=')
 
-    if (i === -1) throw new Error(`Expected NAME=VALUE, got '${entry}'`)
+      if (i === -1) throw new Error(`Expected NAME=VALUE, got '${line}'`)
 
-    result[entry.slice(0, i)] = entry.slice(i + 1)
+      result[line.slice(0, i)] = line.slice(i + 1)
+    }
   }
 
   return result
+}
+
+function expand(entry) {
+  if (entry === '-') return lines(stdin())
+  if (entry.startsWith('@')) return lines(fs.readFileSync(entry.slice(1), 'utf8'))
+  return [entry]
+}
+
+function lines(input) {
+  return input.split(/\r?\n/).filter((line) => line !== '' && !line.startsWith('#'))
+}
+
+function stdin() {
+  const chunks = []
+  const buffer = Buffer.alloc(65536)
+
+  let length
+
+  while ((length = fs.readSync(0, buffer)) > 0) {
+    chunks.push(Buffer.from(buffer.subarray(0, length)))
+  }
+
+  return Buffer.concat(chunks).toString()
 }
 
 function load(specifier) {
